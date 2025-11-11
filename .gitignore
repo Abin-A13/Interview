@@ -1,0 +1,21 @@
+# Logs
+logs/
+*.log
+
+
+# Environment variables
+.env
+.env.local
+.venv
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Operating System temporary files
+db.sqlite3

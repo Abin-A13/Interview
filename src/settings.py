@@ -12,7 +12,14 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
 
+load_dotenv()
+
+my_variable = os.getenv("REDIS_URL")
+# database_url = os.getenv("DATABASE_URL")
+
+print(f"redis: {my_variable}")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,13 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = "django-insecure-e7g**!d4lo)ngwv5zm4rndi3b_kq7#ch@-m-xu+sspv$ynuw2%"
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY","secretkey")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "1") == "1"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -42,7 +48,8 @@ INSTALLED_APPS = [
     "rest_framework",
     
     # third party apps
-    "task_app"
+    "task_app",
+    "users"
 ]
 
 MIDDLEWARE = [
@@ -139,3 +146,25 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+# django-redis cache
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Cache TTL in seconds (configurable)
+TASK_CACHE_TTL = int(os.getenv("TASK_CACHE_TTL", 3600))
