@@ -1,4 +1,4 @@
-# Task Queue & Notification API
+# Task Queue
 
 ## Requirements
 - Python 3.10+
